@@ -74,6 +74,7 @@ class AuditWorker:
             from extraction.robust_extractor import RobustLegalExtractor
             from extraction.legal import LegalExtractor
             from extraction.financial import FinancialExtractor
+            from extraction.robust_financial import RobustFinancialExtractor
 
             parsed_doc = PlainTextParser().parse_bytes(doc.full_text.encode("utf-8"), doc_path=doc.filename)
             chunks = SectionAwareChunker(chunk_size_chars=2000).chunk_document(parsed_doc)
@@ -94,9 +95,19 @@ class AuditWorker:
                     except Exception as llm_err:
                         logger.warning(f"LLM extraction skipped due to API capacity: {llm_err}")
             else:
-                fin_extractor = FinancialExtractor(provider=self.provider)
+                # First extract rule-grounded and exact financial assertions
+                robust_fin = RobustFinancialExtractor(provider=self.provider)
                 for chunk in chunks:
-                    claims.extend(fin_extractor.extract_claims_from_chunk(chunk, doc_full_text=doc.full_text))
+                    claims.extend(robust_fin.extract_claims_from_chunk(chunk, doc_full_text=doc.full_text))
+
+                # If needed, complement with LLM extraction
+                if len(claims) < 2:
+                    try:
+                        fin_extractor = FinancialExtractor(provider=self.provider)
+                        for chunk in chunks[:5]:
+                            claims.extend(fin_extractor.extract_claims_from_chunk(chunk, doc_full_text=doc.full_text))
+                    except Exception as llm_err:
+                        logger.warning(f"Financial LLM extraction skipped: {llm_err}")
 
             # If fewer than 2 claims extracted and no real LLM key is configured, fall back for offline testing
             if len(claims) < 2 and not os.getenv("GEMINI_API_KEY"):
@@ -205,6 +216,10 @@ class AuditWorker:
                 db.merge(solver_model)
 
                 # Finding record
+                finding_title = f.title
+                if audit.module == "financial" and "contractual" in finding_title.lower():
+                    finding_title = finding_title.replace("Contractual", "Financial").replace("contractual", "financial")
+
                 finding_model = FindingModel(
                     finding_id=f.finding_id,
                     audit_id=audit.audit_id,
@@ -212,7 +227,7 @@ class AuditWorker:
                     status=f.status.value,
                     severity=f.severity.value,
                     confidence=f.confidence,
-                    title=f.title,
+                    title=finding_title,
                     description=f.description,
                     claim_a_start=f.claim_a_span.char_start,
                     claim_a_end=f.claim_a_span.char_end,

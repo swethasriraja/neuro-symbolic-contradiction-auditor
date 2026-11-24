@@ -87,7 +87,21 @@ class FinancialExtractor:
             try:
                 raw_items = json.loads(raw_text)
                 if not isinstance(raw_items, list):
-                    raise ValueError(f"Expected JSON array of claims, got {type(raw_items).__name__}")
+                    if isinstance(raw_items, dict):
+                        if "claims" in raw_items and isinstance(raw_items["claims"], list):
+                            raw_items = raw_items["claims"]
+                        elif "financial_claims" in raw_items and isinstance(raw_items["financial_claims"], list):
+                            raw_items = raw_items["financial_claims"]
+                        elif "items" in raw_items and isinstance(raw_items["items"], list):
+                            raw_items = raw_items["items"]
+                        elif "data" in raw_items and isinstance(raw_items["data"], list):
+                            raw_items = raw_items["data"]
+                        elif "metric" in raw_items:
+                            raw_items = [raw_items]
+                        else:
+                            raw_items = []
+                    else:
+                        raise ValueError(f"Expected JSON array of claims, got {type(raw_items).__name__}")
 
                 parsed_chunk_claims = self._parse_and_verify_items(
                     raw_items=raw_items,

@@ -94,7 +94,7 @@ class TermResolver:
             # Check period mismatch (e.g. FY2023 vs FY2022, or FY2023 vs Q1 2023)
             p_a = (claim_a.period or "").strip().lower()
             p_b = (claim_b.period or "").strip().lower()
-            if p_a and p_b and p_a != p_b:
+            if p_a and p_b and p_a != p_b and not (p_a in p_b or p_b in p_a):
                 return TermResolution(
                     status=ScopeStatus.AMBIGUOUS_SCOPE,
                     reason=f"Financial claims reference different reporting periods ('{p_a}' vs '{p_b}').",
@@ -102,15 +102,16 @@ class TermResolver:
                     unresolved_reason="Different reporting periods cannot be directly compared for contradiction.",
                 )
 
-            # Check entity mismatch (e.g. parent company vs subsidiary segment)
+            # Check entity mismatch (allow cross-checking segment sum vs total row)
             e_a = (claim_a.entity or "").strip().lower()
             e_b = (claim_b.entity or "").strip().lower()
             if e_a and e_b and e_a != e_b:
-                return TermResolution(
-                    status=ScopeStatus.AMBIGUOUS_SCOPE,
-                    reason=f"Financial claims reference different entities ('{e_a}' vs '{e_b}').",
-                    should_audit=False,
-                    unresolved_reason="Different reporting entities (e.g. segment vs parent) cannot be compared directly.",
-                )
+                if not ({"total", "segment sum", "company"} & {e_a, e_b}):
+                    return TermResolution(
+                        status=ScopeStatus.AMBIGUOUS_SCOPE,
+                        reason=f"Financial claims reference different entities ('{e_a}' vs '{e_b}').",
+                        should_audit=False,
+                        unresolved_reason="Different reporting entities (e.g. segment vs parent) cannot be compared directly.",
+                    )
 
         return TermResolution(status=ScopeStatus.COMPATIBLE, should_audit=True)

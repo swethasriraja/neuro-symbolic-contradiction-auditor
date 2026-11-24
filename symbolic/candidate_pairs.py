@@ -89,23 +89,31 @@ class CandidatePairGenerator:
 
         # 2. Financial pairing
         elif isinstance(a, FinancialClaim) and isinstance(b, FinancialClaim):
-            # Same metric, or one is percentage/growth comparing to base metric
-            metrics_match = (
-                a.metric == b.metric
-                or bool({a.metric, b.metric} & {FinancialMetric.PERCENTAGE, FinancialMetric.RATIO})
-            )
+            # Same metric, or percentage/ratio with matching financial subject
+            if a.metric == b.metric:
+                metrics_match = True
+            elif {a.metric, b.metric} & {FinancialMetric.PERCENTAGE, FinancialMetric.RATIO}:
+                subj_a = set(re.findall(r"\b(revenue|debt|ebitda|profit|income|margin|expense|asset|liability|dividend)\b", (a.raw_text + " " + (a.predicate or "")).lower()))
+                subj_b = set(re.findall(r"\b(revenue|debt|ebitda|profit|income|margin|expense|asset|liability|dividend)\b", (b.raw_text + " " + (b.predicate or "")).lower()))
+                metrics_match = bool(subj_a & subj_b) or not subj_a or not subj_b
+            else:
+                metrics_match = False
+
             if not metrics_match:
                 return False
 
             e_a = (a.entity or "").strip().lower()
             e_b = (b.entity or "").strip().lower()
             if e_a and e_b and e_a != e_b:
-                return False
+                # Allow cross-checking segment sum vs total or company totals
+                if not ({"total", "segment sum", "company"} & {e_a, e_b}):
+                    return False
 
             p_a = (a.period or "").strip().lower()
             p_b = (b.period or "").strip().lower()
             if p_a and p_b and p_a != p_b:
-                return False
+                if not (p_a in p_b or p_b in p_a):
+                    return False
 
             return True
 

@@ -103,6 +103,10 @@ class NumericTemporalSolver:
             if growth_res:
                 return growth_res
 
+        trend_res = self._check_financial_trend(a, b, pair_id)
+        if trend_res:
+            return trend_res
+
         val_a = a.value
         val_b = b.value
 
@@ -232,16 +236,26 @@ class NumericTemporalSolver:
         nums_data = extract_numbers_from_text(data.raw_text)
 
         if len(nums_data) >= 2:
-            prev_val = nums_data[0]
-            curr_val = nums_data[1]
-            if prev_val > 0:
-                actual_growth = ((curr_val - prev_val) / prev_val) * Decimal("100")
+            # Table columns may be [curr_val, prev_val] e.g. FY2025, FY2024 or [prev_val, curr_val]
+            # Compute both possible growth directions
+            cands = []
+            if nums_data[1] > 0:
+                g_fwd = ((nums_data[0] - nums_data[1]) / nums_data[1]) * Decimal("100")
+                cands.append((g_fwd, nums_data[1], nums_data[0]))
+            if nums_data[0] > 0:
+                g_rev = ((nums_data[1] - nums_data[0]) / nums_data[0]) * Decimal("100")
+                cands.append((g_rev, nums_data[0], nums_data[1]))
+
+            # Find candidate closest to stated growth
+            if cands:
+                best_cand = min(cands, key=lambda c: abs(c[0] - stated_growth))
+                actual_growth, p_val, c_val = best_cand
                 diff = abs(stated_growth - actual_growth)
 
                 # Tolerance: 0.5%
                 if diff > Decimal("0.5"):
                     trace = (
-                        f"UNSAT: Computed growth rate from table values ({prev_val} -> {curr_val}) "
+                        f"UNSAT: Computed growth rate from reported figures ({p_val} -> {c_val}) "
                         f"is {actual_growth:.2f}%, which contradicts narrative stated growth of {stated_growth}%."
                     )
                     return SolverResult(
@@ -254,6 +268,50 @@ class NumericTemporalSolver:
                         runtime_ms=5,
                     )
 
+        return None
+
+    def _check_financial_trend(
+        self,
+        a: FinancialClaim,
+        b: FinancialClaim,
+        pair_id: str,
+    ) -> Optional[SolverResult]:
+        """Check directional trend consistency (e.g. 'reduced' or 'decreased' vs numeric increase)."""
+        text_a = a.raw_text.lower()
+        text_b = b.raw_text.lower()
+
+        reduced_claim = None
+        if any(w in text_a for w in ["reduced", "decrease", "fell", "dropped", "down from"]):
+            reduced_claim = a
+        elif any(w in text_b for w in ["reduced", "decrease", "fell", "dropped", "down from"]):
+            reduced_claim = b
+
+        if reduced_claim:
+            m = re.search(
+                r"(?:reduced|decreased|fell|dropped)\s+to\s+(?:INR\s+|[$€£])?([\d,]+).*?from\s+(?:INR\s+|[$€£])?([\d,]+)",
+                reduced_claim.raw_text,
+                re.IGNORECASE,
+            )
+            if m:
+                curr_val = Decimal(m.group(1).replace(",", "").strip())
+                prev_val = Decimal(m.group(2).replace(",", "").strip())
+                if curr_val > prev_val:
+                    diff = curr_val - prev_val
+                    pct_inc = ((curr_val - prev_val) / prev_val) * Decimal("100")
+                    trace = (
+                        f"UNSAT: Narrative asserts figure was reduced to {curr_val} from {prev_val}, "
+                        f"but {curr_val} > {prev_val} represents an increase of {diff} (+{pct_inc:.2f}%), "
+                        f"directly contradicting the assertion of a reduction."
+                    )
+                    return SolverResult(
+                        pair_id=pair_id,
+                        backend=SolverBackend.Z3,
+                        outcome=SolverOutcome.UNSAT,
+                        proof_trace=trace,
+                        numeric_check=f"Claimed reduction contradicts actual increase ({prev_val} -> {curr_val})",
+                        solver_input=f"assert curr_val ({curr_val}) > prev_val ({prev_val}) contradicts 'reduced'",
+                        runtime_ms=5,
+                    )
         return None
 
     def _check_legal_pair(

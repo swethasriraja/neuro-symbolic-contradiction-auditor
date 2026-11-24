@@ -153,7 +153,9 @@ class GeminiProvider(LLMProvider):
         if response_format == "json":
             extracted_ids = re.findall(r"claim_[0-9_]+", prompt) or ["claim_a", "claim_b"]
 
-            if "judge" in prompt.lower() or "verdict" in prompt.lower() or "proposed_status" in prompt.lower():
+            if "extracting financial assertions" in prompt.lower() or "available financial metrics" in prompt.lower() or "json array of claim objects" in prompt.lower():
+                fallback_json = "[]"
+            elif "judge" in prompt.lower() or "verdict" in prompt.lower() or "proposed_status" in prompt.lower():
                 fallback_json = json.dumps({
                     "proposed_status": "contradiction",
                     "confidence": 0.95,
