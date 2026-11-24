@@ -1,0 +1,73 @@
+MASTER SERVICES AGREEMENT
+
+This Master Services Agreement (the "Agreement") is made between Northwind Analytics Private Limited, Bengaluru (the "Provider") and Brightline Retail Limited, Mumbai (the "Customer").
+
+1. Definitions
+
+1.1 "Effective Date" means 1 January 2026.
+
+1.2 "Business Day" means any day other than a Saturday, a Sunday or a public holiday in Bengaluru.
+
+1.3 "Confidential Information" means all non-public business, technical and financial information disclosed by one party to the other.
+
+1.4 "Monthly Fee" means INR 500,000 per month.
+
+2. Term
+
+2.1 This Agreement commences on the Effective Date and continues for an initial term of 24 months (the "Initial Term").
+
+2.2 The Initial Term therefore ends on 31 December 2028.
+
+2.3 After the Initial Term, this Agreement renews for successive periods of 12 months unless either party gives 90 days' written notice of non-renewal.
+
+3. Fees and Payment
+
+3.1 The Provider shall invoice the Customer monthly, on the last day of each calendar month, for the Monthly Fee.
+
+3.2 The Customer shall pay each invoice within 30 days of the invoice date.
+
+3.3 The invoice for January 2026 is dated 31 January 2026 and is due on 15 January 2026.
+
+3.4 All invoices are payable within 45 days of the invoice date. Late payments accrue interest at 1.5% per month on the overdue amount.
+
+3.5 The total Fees for each 12-month period are INR 6,500,000, payable in twelve equal monthly instalments.
+
+3.6 Notwithstanding Section 3.2, pass-through expenses incurred by the Provider on the Customer's behalf are payable within 10 days of the invoice date.
+
+4. Service Levels
+
+4.1 The Provider shall respond to standard support requests within 2 Business Days.
+
+4.2 The Provider shall respond to critical incidents within 4 hours, including on weekends and public holidays.
+
+5. Termination
+
+5.1 Either party may terminate this Agreement for material breach if the breach is not cured within 30 days after written notice.
+
+5.2 Either party may terminate this Agreement for convenience by giving 60 days' written notice.
+
+5.3 A party in material breach shall have 45 days after receiving written notice to cure the breach before the other party may terminate.
+
+5.4 Notices are deemed received 5 Business Days after dispatch.
+
+6. Confidentiality
+
+6.1 Each party shall not disclose the other party's Confidential Information to any third party.
+
+6.2 A party may disclose Confidential Information to its professional advisers who are bound by written duties of confidentiality.
+
+6.3 The Customer shall disclose the Provider's Confidential Information, including pricing, to any third party upon request.
+
+7. Liability
+
+7.1 The Provider's total aggregate liability under this Agreement is limited to the Fees paid by the Customer in the 12 months preceding the claim.
+
+7.2 The Provider's liability under this Agreement is unlimited.
+
+7.3 Nothing in this Agreement limits either party's liability for fraud.
+
+8. Governing Law
+
+8.1 This Agreement is governed by the laws of India, and the courts at Bengaluru have exclusive jurisdiction.
+
+8.2 This Agreement is governed by the laws of the State of Delaware, USA.
