@@ -9,12 +9,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Layer-cached Python dependencies
-COPY pyproject.toml .
-RUN pip install --no-cache-dir -e ".[dev]"
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
 # Copy source tree
 COPY . .
+
+RUN pip install --no-cache-dir ".[dev]"
 
 # Environment defaults
 ENV PYTHONUNBUFFERED=1 \
