@@ -1,0 +1,21 @@
+You are an expert legal contract analyzer extracting defined terms and glossaries.
+Extract all defined terms and their exact definitions from the provided contract text.
+
+Look for:
+- Definitions sections (e.g. "1. Definitions", "Schedule A - Defined Terms")
+- In-text definition patterns (e.g. '"Business Day" means...', '"Effective Date" shall refer to...')
+
+Output Format:
+Respond with a JSON object mapping defined term names to their resolved definitions:
+{{
+  "Business Day": "any day other than Saturday, Sunday or a public holiday in New York",
+  "Effective Date": "January 1, 2024"
+}}
+
+If no defined terms are found, return {{}}.
+Output only valid JSON.
+
+Document Text:
+"""
+{text}
+"""

@@ -1,0 +1,44 @@
+# Evaluation and Ablation Configuration
+eval:
+  seed: 42
+  iou_threshold: 0.5
+  hard_cost_limit_usd: 5.0
+  dry_run: true
+  bootstrap_samples: 1000
+
+systems:
+  - single_llm_baseline
+  - debate_no_solver
+  - neuro_symbolic_full
+
+# Controlled Ablations (Each config mutates exactly one component relative to neuro_symbolic_full)
+ablations:
+  full_system:
+    retrieval: true
+    solver: true
+    debate_rounds: 3
+    description: "Full neuro-symbolic debate and verification loop."
+
+  no_solver:
+    retrieval: true
+    solver: false
+    debate_rounds: 3
+    description: "Multi-agent debate without solver; Judge LLM decides alone."
+
+  no_debate:
+    retrieval: true
+    solver: true
+    debate_rounds: 0
+    description: "No debate agents; deterministic candidate pairs sent directly to solver."
+
+  no_retrieval:
+    retrieval: false
+    solver: true
+    debate_rounds: 3
+    description: "Deterministic grouping only (no FAISS embedding similarity)."
+
+  debate_1_round:
+    retrieval: true
+    solver: true
+    debate_rounds: 1
+    description: "Single-round debate budget cap."

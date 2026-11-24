@@ -1,0 +1,48 @@
+app:
+  name: neuro-symbolic-auditor
+  version: "0.1.0"
+  log_level: INFO            # DEBUG | INFO | WARNING | ERROR
+
+llm:
+  provider: gemini           # Swappable via provider abstraction: "gemini" | "mock"
+  model: gemini-3.5-flash-lite
+  temperature: 0.0           # Logged per-call for determinism
+  seed: 42                   # Logged per-call for determinism
+  max_retries: 2             # Retries on schema/JSON parse failure (total 3 attempts)
+
+extraction:
+  legal_prompt_version: "v1"
+  financial_prompt_version: "v1"
+  defined_terms_prompt_version: "v1"
+
+retrieval:
+  embedding_model: sentence-transformers/all-MiniLM-L6-v2
+  faiss_index_type: Flat     # Flat (v1); IVF (v2)
+  similarity_threshold: 0.80 # Cosine similarity cutoff
+  top_k: 5                   # Nearest neighbors per claim
+  max_candidate_pairs: 25    # Hard cap for pairs sent to debate (Step 4 Q2)
+
+debate:
+  max_rounds: 3              # Hard limit
+  timeout_seconds: 120
+  per_pair_token_budget: 8000
+  per_pair_cost_budget_usd: 0.15
+  per_document_cost_budget_usd: 2.00
+  max_retries: 2             # Retries on agent malformed JSON
+
+symbolic:
+  backend: z3                # z3 | datalog
+  timeout_seconds: 30
+
+ingestion:
+  supported_formats:
+    - pdf
+    - docx
+    - html
+    - txt
+  max_file_size_mb: 50
+  chunk_size_chars: 2000
+  chunk_overlap_chars: 0
+
+database:
+  url: "${DATABASE_URL}"     # Injected from .env; never hard-coded

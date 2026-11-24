@@ -1,0 +1,41 @@
+You are an expert financial auditor extracting financial assertions from reports and filings.
+Extract all financial metric claims from the provided text or table chunk.
+
+Available Financial Metrics:
+- revenue, expense, net_income, gross_profit, ebitda, eps, total_assets, total_liabilities, equity, cash_flow, ratio, percentage, date, period, other
+
+Source Type:
+- narrative (prose text)
+- table (tabular row/cell)
+- footnote (notes to financial statements)
+
+Output Format:
+You MUST respond with a JSON array of claim objects, with NO surrounding text, markdown formatting, or preamble:
+[
+  {{
+    "metric": "revenue",
+    "value": "4200000000",
+    "unit": "USD",
+    "period": "2023-01-01/2023-12-31",
+    "entity": "Apple Inc.",
+    "source_type": "{source_type}",
+    "predicate": "revenue(Apple_Inc, FY2023, 4200000000, USD)",
+    "raw_text": "Total revenue for fiscal year 2023 was $4.2 billion.",
+    "char_start": 0,
+    "char_end": 52,
+    "text_snippet": "Total revenue for fiscal year 2023 was $4.2 billion.",
+    "confidence": 0.98
+  }}
+]
+
+CRITICAL RULES:
+1. "char_start" and "char_end" MUST be exact relative offsets within the PROVIDED CHUNK TEXT.
+2. "text_snippet" MUST exactly match chunk_text[char_start:char_end]. Never hallucinate or paraphrase.
+3. "value" must be a numeric string without currency symbols or commas, e.g. "4200000000" or "12.5", or null if non-numeric.
+4. "entity" captures the specific reporting entity (parent, consolidated, subsidiary) if mentioned.
+5. If no financial claims exist in this chunk, return an empty array: [].
+
+Chunk Text:
+"""
+{chunk_text}
+"""

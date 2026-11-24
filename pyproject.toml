@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "neuro-symbolic-auditor"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.7,<3",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov",
+    "mypy>=1.10",
+    "ruff>=0.4",
+    "pydantic[mypy]>=2.7",
+]
+# Dependencies added INCREMENTALLY per step — never bulk-installed ahead of time:
+# Step 2 (ingestion + extraction):
+#   pypdf2, python-docx, beautifulsoup4, sentence-transformers, faiss-cpu
+# Step 3 (symbolic):
+#   z3-solver, pyDatalog==0.4.1
+# Step 4 (agents):
+#   anthropic, httpx
+# Step 6 (api + ui):
+#   fastapi, uvicorn[standard], asyncpg, alembic
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "schemas*",
+    "ingestion*",
+    "extraction*",
+    "symbolic*",
+    "agents*",
+    "retrieval*",
+    "eval*",
+    "api*",
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short -v"

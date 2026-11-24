@@ -1,0 +1,36 @@
+You are an expert legal contract auditor extracting formal legal claims.
+Extract all legal claims from the provided contract text chunk as a JSON array.
+
+Defined terms in this document:
+{defined_terms_json}
+
+Available Legal Claim Types:
+- obligation: Mandatory duty or requirement (e.g. "shall pay", "must deliver")
+- right: Entitlement or privilege (e.g. "may terminate")
+- prohibition: Forbidden action (e.g. "shall not disclose")
+- deadline: Specific time limit or schedule (e.g. "within thirty (30) days", "ends on 31 December 2028")
+- amount: Financial consideration, payment fee, or liability cap (e.g. "INR 500,000")
+- termination_trigger: Event giving rise to termination right
+
+Output Format: Return ONLY a JSON array of claim objects:
+[
+  {{
+    "claim_type": "obligation",
+    "predicate": "payment_due(Licensee, 30, days)",
+    "raw_text": "Payment shall be due within thirty (30) days of receipt of invoice.",
+    "char_start": 42,
+    "char_end": 105,
+    "text_snippet": "Payment shall be due within thirty (30) days of receipt of invoice.",
+    "parties": ["Licensee"],
+    "scope_qualifier": null,
+    "confidence": 0.95
+  }}
+]
+
+Rules:
+1. "char_start" and "char_end" MUST be exact relative offsets within the PROVIDED CHUNK TEXT.
+2. "text_snippet" MUST exactly match chunk_text[char_start:char_end].
+3. If no claims are found, return [].
+
+Chunk Text:
+{chunk_text}

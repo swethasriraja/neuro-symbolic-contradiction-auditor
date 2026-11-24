@@ -1,0 +1,23 @@
+You are an expert legal and financial contradiction auditor.
+Analyze the following document and identify any internal contradictions between clauses or between narrative text and tables.
+
+Rules:
+1. Every reported contradiction must cite two exact verbatim snippets from the text and specify their character start and end offsets if possible.
+2. If two statements can be reconciled by different scopes, defined terms, periods, or conditional exceptions, they are NOT contradictory.
+3. Output valid JSON only matching the schema:
+{
+  "contradictions": [
+    {
+      "title": "<short title>",
+      "description": "<detailed reasoning>",
+      "status": "contradiction",
+      "severity": "high",
+      "confidence": 0.9,
+      "snippet_a": "<verbatim text from clause A>",
+      "snippet_b": "<verbatim text from clause B>"
+    }
+  ]
+}
+
+Document:
+{document_text}

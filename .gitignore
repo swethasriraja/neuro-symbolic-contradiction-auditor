@@ -1,0 +1,55 @@
+# Secrets — never commit
+.env
+.env*
+!.env.example
+*.env.local
+
+# Node / UI
+node_modules/
+ui/node_modules/
+dist/
+ui/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# Type checking and linting
+.mypy_cache/
+.ruff_cache/
+
+# Testing and coverage
+.pytest_cache/
+.eval_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Data and indexes (generated at runtime)
+*.faiss
+*.db
+*.sqlite3
+data/
+indexes/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log

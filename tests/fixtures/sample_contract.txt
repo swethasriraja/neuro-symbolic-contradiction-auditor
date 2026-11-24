@@ -1,0 +1,15 @@
+MASTER SERVICES AGREEMENT
+
+§ 1. DEFINITIONS
+"Business Day" means any day other than Saturday, Sunday, or a public holiday in the State of New York.
+"Effective Date" means January 1, 2024.
+"Confidential Information" refers to any proprietary technical or business data disclosed by either party.
+
+§ 2. PAYMENT TERMS
+Payment shall be due within thirty (30) days following receipt of an undisputed invoice.
+Licensee shall pay an annual subscription fee of $120,000 in equal quarterly installments.
+
+§ 3. TERM AND TERMINATION
+This Agreement shall commence on the Effective Date and continue until December 31, 2025.
+Either party may terminate this Agreement upon fifteen (15) Business Days prior written notice in the event of material breach.
+Upon termination, Licensee shall immediately return all Confidential Information.
